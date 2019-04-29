@@ -38,6 +38,7 @@ use NextDom\Helpers\NextDomHelper;
 use NextDom\Helpers\Utils;
 use NextDom\Model\Entity\JeeObject;
 use NextDom\Model\Entity\Update;
+use NextDom\Model\Entity\User;
 
 class ObjectManager
 {
@@ -102,6 +103,18 @@ class ObjectManager
         }
         $sql .= ' ORDER BY position,name,father_id';
         return DBHelper::Prepare($sql, array(), DBHelper::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, self::CLASS_NAME);
+    }
+
+    public static function getDefaultUserRoom(User $user)
+    {
+        $rootRoomId = $user->getOptions('defaultDashboardObject');
+        if (empty($rootRoomId)) {
+            $defaultRoom = JeeObjectManager::getRootObjects();
+        }
+        else {
+            $defaultRoom = JeeObjectManager::byId($rootRoomId);
+        }
+        return $defaultRoom;
     }
 
     /**

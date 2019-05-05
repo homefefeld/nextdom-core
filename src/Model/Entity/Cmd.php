@@ -277,7 +277,7 @@ class Cmd implements EntityInterface
         return Utils::getJsonAttr($this->display, $_key, $_default);
     }
 
-    public function getIsvisible()
+    public function getIsVisible()
     {
         return $this->isVisible;
     }

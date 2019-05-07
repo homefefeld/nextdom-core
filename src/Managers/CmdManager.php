@@ -89,7 +89,7 @@ class CmdManager
         if (!is_array($idsList) || count($idsList) == 0) {
             return [];
         }
-        $in = trim(preg_replace('/[, ]{2,}/m',',',implode(',', $idsList)), ',');
+        $in = trim(preg_replace('/[, ]{2,}/m', ',', implode(',', $idsList)), ',');
         if ($in === '') {
             return [];
         }
@@ -437,7 +437,7 @@ class CmdManager
             'value' => $value,
             'search' => '%#' . $value . '#%',
         );
-        if(strpos($value,'variable(') !== false){
+        if (strpos($value, 'variable(') !== false) {
             $values['search'] = '%#' . $value . '%';
         }
         if ($onlyEnable) {

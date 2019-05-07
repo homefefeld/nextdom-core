@@ -30,9 +30,9 @@ class ProfilsAjax extends BaseAjax
     public function removeImage()
     {
         $uploaddir = sprintf("%s/public/img/profils", NEXTDOM_ROOT);
-        $pathInfo  = pathinfo(init('image'));
+        $pathInfo = pathinfo(init('image'));
         $extension = Utils::array_key_default($pathInfo, "extension", "<no-ext>");
-        $path      = sprintf("%s/%s.%s", $uploaddir, $pathInfo['basename'], $extension);
+        $path = sprintf("%s/%s.%s", $uploaddir, $pathInfo['basename'], $extension);
         AjaxHelper::success(unlink($path));
     }
 

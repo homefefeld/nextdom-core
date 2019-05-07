@@ -91,7 +91,6 @@ abstract class BaseAjax
 
     /**
      * Start the process
-
      * @throws \Exception
      */
     public function process()

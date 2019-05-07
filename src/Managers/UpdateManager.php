@@ -306,8 +306,8 @@ class UpdateManager
                FROM `' . self::DB_CLASS_NAME . '`
                WHERE status=:status';
         if ($filter != '') {
-           $values['type'] = $filter;
-           $sql .= ' AND type=:type';
+            $values['type'] = $filter;
+            $sql .= ' AND type=:type';
         }
 
         $result = \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW);

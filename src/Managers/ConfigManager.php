@@ -70,7 +70,7 @@ class ConfigManager
                 self::$defaultConfiguration[$pluginId] = parse_ini_file(NEXTDOM_DATA . '/config/default.config.ini', true);
                 $customPath = sprintf("%s/custom/custom.config.ini", NEXTDOM_DATA);
                 if (file_exists($customPath)) {
-                    $custom =  parse_ini_file($customPath, true);
+                    $custom = parse_ini_file($customPath, true);
                     self::$defaultConfiguration[$pluginId]['core'] = array_merge(self::$defaultConfiguration[$pluginId]['core'], $custom['core']);
                 }
             } else {

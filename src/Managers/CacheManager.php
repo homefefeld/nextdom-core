@@ -277,10 +277,10 @@ class CacheManager
         }
         try {
             $cacheFile = self::getArchivePath();
-            $rmCmd     = sprintf("rm -rf %s", $cacheFile);
-            $tarCmd    = sprintf("cd %s; tar cfz %s *  2>&1 > /dev/null", $cacheDir, $cacheFile);
-            $chmodCmd  = sprintf("chmod 664 %s", $cacheFile);
-            $chownCmd  = sprintf("chown %s:%s %s", SystemHelper::getWWWUid(), SystemHelper::getWWWGid(), $cacheFile);
+            $rmCmd = sprintf("rm -rf %s", $cacheFile);
+            $tarCmd = sprintf("cd %s; tar cfz %s *  2>&1 > /dev/null", $cacheDir, $cacheFile);
+            $chmodCmd = sprintf("chmod 664 %s", $cacheFile);
+            $chownCmd = sprintf("chown %s:%s %s", SystemHelper::getWWWUid(), SystemHelper::getWWWGid(), $cacheFile);
 
             \com_shell::execute($rmCmd);
             \com_shell::execute($tarCmd);

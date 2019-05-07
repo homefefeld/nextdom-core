@@ -189,11 +189,11 @@ class UpdateAjax extends BaseAjax
         AuthentificationHelper::isConnectedAsAdminOrFail();
         Utils::unautorizedInDemo();
         $uploadDir = '/tmp';
-        $filename = Utils::readUploadedFile($_FILES, "file", $uploadDir, 100, array(), function($file) {
+        $filename = Utils::readUploadedFile($_FILES, "file", $uploadDir, 100, array(), function ($file) {
             $remove = array(" ", "(", ")");
             return str_replace($remove, "", $file["name"]);
         });
         $filepath = sprintf("%s/%s", $uploadDir, $filename);
         AjaxHelper::success($filepath);
-   }
+    }
 }

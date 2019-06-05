@@ -454,7 +454,7 @@ class Cmd implements EntityInterface
 
     public function setHtml($_key, $_value)
     {
-        if (in_array($_key, array('dashboard', 'mobile', 'dview', 'mview', 'dplan')) && $this->getWidgetTemplateCode($_key, true) == $_value) {
+        if (in_array($_key, array('dashboard', 'dview', 'mview', 'dplan')) && $this->getWidgetTemplateCode($_key, true) == $_value) {
             $_value = '';
         }
         if ($this->getHtml($_key) != $_value) {
@@ -957,11 +957,10 @@ class Cmd implements EntityInterface
 
         if ($_cmdColor == null && $version != 'scenario') {
             $eqLogic = $this->getEqLogicId();
-            $vcolor = ($version == 'mobile') ? 'mcmdColor' : 'cmdColor';
             if ($eqLogic->getPrimaryCategory() == '') {
-                $replace['#cmdColor#'] = NextDomHelper::getConfiguration('eqLogic:category:default:' . $vcolor);
+                $replace['#cmdColor#'] = NextDomHelper::getConfiguration('eqLogic:category:default:cmdColor');
             } else {
-                $replace['#cmdColor#'] = NextDomHelper::getConfiguration('eqLogic:category:' . $eqLogic->getPrimaryCategory() . ':' . $vcolor);
+                $replace['#cmdColor#'] = NextDomHelper::getConfiguration('eqLogic:category:' . $eqLogic->getPrimaryCategory() . ':cmdColor');
             }
         } else {
             $replace['#cmdColor#'] = $_cmdColor;

@@ -32,8 +32,8 @@ use NextDom\Managers\EqLogicManager;
 use NextDom\Managers\EqRealManager;
 use NextDom\Managers\EventManager;
 use NextDom\Managers\InteractDefManager;
-use NextDom\Managers\ObjectManager;
 use NextDom\Managers\MessageManager;
+use NextDom\Managers\ObjectManager;
 use NextDom\Managers\PlanHeaderManager;
 use NextDom\Managers\PluginManager;
 use NextDom\Managers\ScenarioManager;
@@ -671,7 +671,7 @@ class EqLogic implements EntityInterface
     /**
      * Get HTML code for battery widget
      *
-     * @param string $display Display type (dashboard or mobile)
+     * @param string $display Display type
      *
      * @return string HTML code
      *
@@ -708,11 +708,7 @@ class EqLogic implements EntityInterface
         $classAttr = $level . ' ' . $battery . ' ' . $plugins . ' ' . $object_name;
         $idAttr = $level . '__' . $battery . '__' . $plugins . '__' . $object_name;
         $html .= '<div id="' . $idAttr . '" class="eqLogic eqLogic-widget eqLogic-battery ' . $classAttr . '">';
-        if ($display == 'mobile') {
-            $html .= '<span class="eqLogic-name">' . $this->getName() . '</span>';
-        } else {
-            $html .= '<a class="eqLogic-name" href="' . $this->getLinkToConfiguration() . '">' . $this->getName() . '</a>';
-        }
+        $html .= '<a class="eqLogic-name" href="' . $this->getLinkToConfiguration() . '">' . $this->getName() . '</a>';
         $html .= '<span class="eqLogic-place">' . $object_name . '</span>';
         $html .= '<div class="eqLogic-battery-icon"><i class="icon nextdom-battery' . $niveau . ' tooltips" title="' . $this->getStatus('battery', -2) . '%"></i></div>';
         $html .= '<div class="eqLogic-percent">' . $this->getStatus('battery', -2) . '%</div>';
@@ -841,7 +837,7 @@ class EqLogic implements EntityInterface
     {
         // Check if view type is valid
         if (!EqLogicViewType::exists($viewType)) {
-            throw new CoreException(__('La version demandée ne peut pas être vide (mobile, dashboard, dview ou scénario)'));
+            throw new CoreException(__('La version demandée ne peut pas être vide (dashboard, dview ou scénario)'));
         }
         if (!$this->hasRight('r')) {
             return '';
@@ -945,9 +941,6 @@ class EqLogic implements EntityInterface
             $replace['#hideEqLogicName#'] = 'display:none;';
         }
         $vcolor = 'cmdColor';
-        if ($version == 'mobile' || $viewType == 'mview') {
-            $vcolor = 'mcmdColor';
-        }
         $parameters = $this->getDisplay('parameters');
         $replace['#cmd-background-color#'] = ($this->getPrimaryCategory() == '') ? NextDomHelper::getConfiguration('eqLogic:category:default:' . $vcolor) : NextDomHelper::getConfiguration('eqLogic:category:' . $this->getPrimaryCategory() . ':' . $vcolor);
         if (is_array($parameters) && isset($parameters['cmd-background-color'])) {
@@ -1012,7 +1005,7 @@ class EqLogic implements EntityInterface
     /**
      * Get HTML code depends of the view
      *
-     * @param string $viewType Type of view : mobile, dashboard, scenario
+     * @param string $viewType Type of view : dashboard, scenario
      *
      * @return array|mixed
      *
@@ -1100,7 +1093,7 @@ class EqLogic implements EntityInterface
     public function emptyCacheWidget()
     {
         $users = UserManager::all();
-        foreach (array('dashboard', 'mobile', 'mview', 'dview', 'dplan', 'view', 'plan') as $version) {
+        foreach (array('dashboard', 'mview', 'dview', 'dplan', 'view', 'plan') as $version) {
             $mc = CacheManager::byKey('widgetHtml' . $this->getId() . $version);
             $mc->remove();
             foreach ($users as $user) {
@@ -1207,37 +1200,35 @@ class EqLogic implements EntityInterface
             if ($this->getDisplay('width', -1) == -1 || intval($this->getDisplay('height')) < 2) {
                 $this->setDisplay('width', 'auto');
             }
-            foreach (array('dashboard', 'mobile') as $key) {
-                if ($this->getDisplay('layout::' . $key . '::table::parameters') == '') {
-                    $this->setDisplay('layout::' . $key . '::table::parameters', array('center' => 1, 'styletd' => 'padding:3px;'));
+            if ($this->getDisplay('layout::dashboard::table::parameters') == '') {
+                $this->setDisplay('layout::dashboard::table::parameters', array('center' => 1, 'styletd' => 'padding:3px;'));
+            }
+            if ($this->getDisplay('layout::dashboard') == 'table') {
+                if ($this->getDisplay('layout::dashboard::table::nbLine') == '') {
+                    $this->setDisplay('layout::dashboard::table::nbLine', 1);
                 }
-                if ($this->getDisplay('layout::' . $key) == 'table') {
-                    if ($this->getDisplay('layout::' . $key . '::table::nbLine') == '') {
-                        $this->setDisplay('layout::' . $key . '::table::nbLine', 1);
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::nbColumn') == '') {
-                        $this->setDisplay('layout::' . $key . '::table::nbLine', 1);
-                    }
+                if ($this->getDisplay('layout::dashboard::table::nbColumn') == '') {
+                    $this->setDisplay('layout::dashboard::table::nbLine', 1);
                 }
-                foreach ($this->getCmd() as $cmd) {
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line') == '' && $cmd->getDisplay('layout::' . $key . '::table::cmd::line') != '') {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line', $cmd->getDisplay('layout::' . $key . '::table::cmd::line'));
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column') == '' && $cmd->getDisplay('layout::' . $key . '::table::cmd::column') != '') {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column', $cmd->getDisplay('layout::' . $key . '::table::cmd::column'));
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line', 1) > $this->getDisplay('layout::' . $key . '::table::nbLine', 1)) {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line', $this->getDisplay('layout::' . $key . '::table::nbLine', 1));
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column', 1) > $this->getDisplay('layout::' . $key . '::table::nbColumn', 1)) {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column', $this->getDisplay('layout::' . $key . '::table::nbColumn', 1));
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line') == '') {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::line', 1);
-                    }
-                    if ($this->getDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column') == '') {
-                        $this->setDisplay('layout::' . $key . '::table::cmd::' . $cmd->getId() . '::column', 1);
-                    }
+            }
+            foreach ($this->getCmd() as $cmd) {
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line') == '' && $cmd->getDisplay('layout::dashboard::table::cmd::line') != '') {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line', $cmd->getDisplay('layout::dashboard::table::cmd::line'));
+                }
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column') == '' && $cmd->getDisplay('layout::dashboard::table::cmd::column') != '') {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column', $cmd->getDisplay('layout::dashboard::table::cmd::column'));
+                }
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line', 1) > $this->getDisplay('layout::dashboard::table::nbLine', 1)) {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line', $this->getDisplay('layout::dashboard::table::nbLine', 1));
+                }
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column', 1) > $this->getDisplay('layout::dashboard::table::nbColumn', 1)) {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column', $this->getDisplay('layout::dashboard::table::nbColumn', 1));
+                }
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line') == '') {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::line', 1);
+                }
+                if ($this->getDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column') == '') {
+                    $this->setDisplay('layout::dashboard::table::cmd::' . $cmd->getId() . '::column', 1);
                 }
             }
         }
@@ -1328,12 +1319,11 @@ class EqLogic implements EntityInterface
      */
     public function getBackgroundColor($_version = 'dashboard')
     {
-        $vcolor = ($_version == 'mobile') ? 'mcolor' : 'color';
         $category = $this->getPrimaryCategory();
         if ($category != '') {
-            return NextDomHelper::getConfiguration('eqLogic:category:' . $category . ':' . $vcolor);
+            return NextDomHelper::getConfiguration('eqLogic:category:' . $category . ':color');
         }
-        return NextDomHelper::getConfiguration('eqLogic:category:default:' . $vcolor);
+        return NextDomHelper::getConfiguration('eqLogic:category:default:color');
     }
 
     /**
@@ -1917,7 +1907,8 @@ class EqLogic implements EntityInterface
         return $this;
     }
 
-    public function getAllAttributes() {
+    public function getAllAttributes()
+    {
         return [
             '_debug' => $this->_debug,
             '_object' => $this->_object,
